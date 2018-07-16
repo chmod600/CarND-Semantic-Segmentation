@@ -86,7 +86,7 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
 
     # Deconvolute E-layer 4
     d_layer_3 = tf.layers.conv2d_transpose(
-        vgg_layer4_out,
+        layer_4_skip,
         num_classes,
         4,
         2,
