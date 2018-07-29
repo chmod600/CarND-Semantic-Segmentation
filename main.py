@@ -8,7 +8,7 @@ import helper
 import warnings
 from distutils.version import LooseVersion
 import project_tests as tests
-
+import pdb
 
 # Check TensorFlow Version
 assert LooseVersion(tf.__version__) >= LooseVersion('1.0'), 'Please use TensorFlow version 1.0 or newer.  You are using {}'.format(tf.__version__)
@@ -57,18 +57,18 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     :return: The Tensor for the last layer of output
     """
     # TODO: Implement function
-    layer7_1x1 = tf.layers.conv2d(
-        vgg_layer7_out,
-        num_classes,
-        1,
-        strides=(1,1),
-        padding = 'same',
-        kernel_initializer = tf.random_normal_initializer(stddev = 0.01),
-        kernel_regularizer = tf.contrib.layers.l2_regularizer(1e-3)
-    )
+    # layer7_1x1 = tf.layers.conv2d(
+    #     vgg_layer7_out,
+    #     num_classes,
+    #     1,
+    #     strides=(1,1),
+    #     padding = 'same',
+    #     kernel_initializer = tf.random_normal_initializer(stddev = 0.01),
+    #     kernel_regularizer = tf.contrib.layers.l2_regularizer(1e-3)
+    # )
     # Deconvolute E-layer 7
     d_layer_4 = tf.layers.conv2d_transpose(
-        layer7_1x1,
+        vgg_layer7_out,
         num_classes,
         4,
         2,
@@ -148,12 +148,14 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
             labels = correct_label
         )
     )
+    reg_losses = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
+    loss = cross_entropy_loss + tf.to_float(sum(reg_losses))
 
     # Using Adam Optimizer
     optimizer = tf.train.AdamOptimizer(learning_rate = learning_rate)
-    train_op = optimizer.minimize(cross_entropy_loss)
+    train_op = optimizer.minimize(loss)
 
-    return logits, train_op, cross_entropy_loss
+    return logits, train_op, loss
 
 tests.test_optimize(optimize)
 
@@ -234,7 +236,7 @@ def run():
             num_classes
         )
         # Optimize the neural network for correctly identifying road pixels
-        logits, train_op, cross_entropy_loss = optimize(
+        logits, train_op, loss = optimize(
             layer_output,
             correct_label,
             learning_rate,
@@ -248,7 +250,7 @@ def run():
             batch_size,
             get_batches_fn,
             train_op,
-            cross_entropy_loss,
+            loss,
             input,
             correct_label,
             keep,
