@@ -193,7 +193,7 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
 tests.test_train_nn(train_nn)
 
 def run():
-    num_classes = 2 # Is road surface, is not road surface
+    num_classes = 2 # Is road surface, is not road surface?
     image_shape = (160, 576)
     data_dir = './data'
     runs_dir = './runs'
