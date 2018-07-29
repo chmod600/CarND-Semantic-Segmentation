@@ -1,3 +1,6 @@
+# Akshay Khole
+# References - Lessons, project walkthrough, slack channels, mentor support
+
 #!/usr/bin/env python3
 import os.path
 import tensorflow as tf
@@ -16,7 +19,6 @@ if not tf.test.gpu_device_name():
     warnings.warn('No GPU found. Please use a GPU to train your neural network.')
 else:
     print('Default GPU Device: {}'.format(tf.test.gpu_device_name()))
-
 
 def load_vgg(sess, vgg_path):
     """
@@ -55,7 +57,7 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     :return: The Tensor for the last layer of output
     """
     # TODO: Implement function
-    d_layer7_1x1 = tf.layers.conv2d(
+    layer7_1x1 = tf.layers.conv2d(
         vgg_layer7_out,
         num_classes,
         1,
@@ -66,7 +68,7 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     )
     # Deconvolute E-layer 7
     d_layer_4 = tf.layers.conv2d_transpose(
-        d_layer7_1x1,
+        layer7_1x1,
         num_classes,
         4,
         2,
@@ -146,6 +148,8 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
             labels = correct_label
         )
     )
+
+    # Using Adam Optimizer
     optimizer = tf.train.AdamOptimizer(learning_rate = learning_rate)
     train_op = optimizer.minimize(cross_entropy_loss)
 
@@ -171,10 +175,8 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
     """
     # TODO: Implement function
     sess.run(tf.global_variables_initializer())
-    print("Training...")
-    print()
     for epoch in range(epochs):
-        print("EPOCH {} ...".format(epoch + 1))
+        print("Epoch: {}".format(epoch + 1))
         for image, label in get_batches_fn(batch_size):
             _, loss = sess.run(
                 [train_op, cross_entropy_loss],
@@ -185,13 +187,13 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
                     learning_rate: 0.0009
                 }
             )
-            print("Loss - {:.3f}".format(loss))
+            print("Loss in Epoch{}: {:.3f}".format((epoch + 1), loss))
         print()
 
 tests.test_train_nn(train_nn)
 
 def run():
-    num_classes = 2
+    num_classes = 2 # Is road surface, is not road surface
     image_shape = (160, 576)
     data_dir = './data'
     runs_dir = './runs'
@@ -215,22 +217,29 @@ def run():
         # OPTIONAL: Augment Images for better results
         #  https://datascience.stackexchange.com/questions/5224/how-to-prepare-augment-images-for-neural-network
 
-        correct_label = tf.placeholder(tf.int32, [None, None, None, num_classes], name='correct_label')
-        learning_rate = tf.placeholder(tf.float32, name='learning_rate')
+        correct_label = tf.placeholder(tf.int32, [None, None, None, num_classes], name = 'correct_label')
+        learning_rate = tf.placeholder(tf.float32, name = 'learning_rate')
         # TODO: Build NN using load_vgg, layers, and optimize function
+
+        # Get all layers of VGG
         input, keep, layer3, layer4, layer7 = load_vgg(
             sess,
             vgg_path
         )
-
+        # Get final layers with deconvoluted layers added
         layer_output = layers(
             layer3,
             layer4,
             layer7,
             num_classes
         )
-
-        logits, train_op, cross_entropy_loss = optimize(layer_output, correct_label, learning_rate, num_classes)
+        # Optimize the neural network for correctly identifying road pixels
+        logits, train_op, cross_entropy_loss = optimize(
+            layer_output,
+            correct_label,
+            learning_rate,
+            num_classes
+        )
 
         # TODO: Train NN using the train_nn function
         train_nn(
@@ -247,7 +256,15 @@ def run():
         )
 
         # TODO: Save inference data using helper.save_inference_samples
-        helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep, input)
+        helper.save_inference_samples(
+            runs_dir,
+            data_dir,
+            sess,
+            image_shape,
+            logits,
+            keep,
+            input
+        )
 
         # OPTIONAL: Apply the trained model to a video
 
