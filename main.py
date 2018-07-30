@@ -57,18 +57,19 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     :return: The Tensor for the last layer of output
     """
     # TODO: Implement function
-    layer7_1x1 = tf.layers.conv2d(
-        vgg_layer7_out,
-        num_classes,
-        1,
-        strides=(1,1),
-        padding = 'same',
-        kernel_initializer = tf.random_normal_initializer(stddev = 0.01),
-        kernel_regularizer = tf.contrib.layers.l2_regularizer(1e-3)
-    )
+    # layer7_1x1 = tf.layers.conv2d(
+    #     vgg_layer7_out,
+    #     num_classes,
+    #     1,
+    #     strides=(1,1),
+    #     padding = 'same',
+    #     kernel_initializer = tf.random_normal_initializer(stddev = 0.01),
+    #     kernel_regularizer = tf.contrib.layers.l2_regularizer(1e-3)
+    # )
+
     # Deconvolute E-layer 7
     d_layer_4 = tf.layers.conv2d_transpose(
-        layer7_1x1,
+        vgg_layer7_out,
         num_classes,
         4,
         2,
@@ -200,8 +201,8 @@ def run():
     data_dir = './data'
     runs_dir = './runs'
     tests.test_for_kitti_dataset(data_dir)
-    epochs = 20
-    batch_size = 5
+    epochs = 40
+    batch_size = 10
 
     # Download pretrained vgg model
     helper.maybe_download_pretrained_vgg(data_dir)
