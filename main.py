@@ -149,9 +149,10 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
             labels = correct_label
         )
     )
+
     reg_losses = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
     loss = cross_entropy_loss + tf.to_float(sum(reg_losses))
-
+    print("Regularization Loss: {}".format(sum(reg_losses)))
     # Using Adam Optimizer
     optimizer = tf.train.AdamOptimizer(learning_rate = learning_rate)
     train_op = optimizer.minimize(loss)
@@ -202,7 +203,7 @@ def run():
     runs_dir = './runs'
     tests.test_for_kitti_dataset(data_dir)
     epochs = 40
-    batch_size = 10
+    batch_size = 5
 
     # Download pretrained vgg model
     helper.maybe_download_pretrained_vgg(data_dir)
