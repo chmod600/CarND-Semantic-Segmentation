@@ -57,15 +57,15 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     :return: The Tensor for the last layer of output
     """
     # TODO: Implement function
-    # layer7_1x1 = tf.layers.conv2d(
-    #     vgg_layer7_out,
-    #     num_classes,
-    #     1,
-    #     strides=(1,1),
-    #     padding = 'same',
-    #     kernel_initializer = tf.random_normal_initializer(stddev = 0.01),
-    #     kernel_regularizer = tf.contrib.layers.l2_regularizer(1e-3)
-    # )
+    layer7_1x1 = tf.layers.conv2d(
+        vgg_layer7_out,
+        num_classes,
+        1,
+        strides=(1,1),
+        padding = 'same',
+        kernel_initializer = tf.random_normal_initializer(stddev = 0.01),
+        kernel_regularizer = tf.contrib.layers.l2_regularizer(1e-3)
+    )
 
     # Deconvolute E-layer 7
     d_layer_4 = tf.layers.conv2d_transpose(
@@ -150,8 +150,9 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
         )
     )
 
+    reg_const = 0.01
     reg_losses = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
-    loss = cross_entropy_loss + tf.to_float(sum(reg_losses))
+    loss = cross_entropy_loss + reg_const * tf.to_float(sum(reg_losses))
     print("Regularization Loss: {}".format(sum(reg_losses)))
     # Using Adam Optimizer
     optimizer = tf.train.AdamOptimizer(learning_rate = learning_rate)
@@ -188,7 +189,7 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
                     input_image: image,
                     correct_label: label,
                     keep_prob: 0.5,
-                    learning_rate: 0.0009
+                    learning_rate: 0.001
                 }
             )
             print("Loss in Epoch{}: {:.3f}".format((epoch + 1), loss))
@@ -203,7 +204,7 @@ def run():
     runs_dir = './runs'
     tests.test_for_kitti_dataset(data_dir)
     epochs = 40
-    batch_size = 5
+    batch_size = 7
 
     # Download pretrained vgg model
     helper.maybe_download_pretrained_vgg(data_dir)
