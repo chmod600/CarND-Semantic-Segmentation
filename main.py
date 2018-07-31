@@ -189,7 +189,7 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
                     input_image: image,
                     correct_label: label,
                     keep_prob: 0.5,
-                    learning_rate: learning_rate
+                    learning_rate: 0.001
                 }
             )
             print("Loss in Epoch{}: {:.3f}".format((epoch + 1), loss))
@@ -257,7 +257,7 @@ def run():
             input,
             correct_label,
             keep,
-            0.001
+            learning_rate
         )
 
         # TODO: Save inference data using helper.save_inference_samples
