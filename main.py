@@ -150,7 +150,7 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
         )
     )
 
-    reg_const = 0.01
+    reg_const = 1e-5
     reg_losses = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
     loss = cross_entropy_loss + reg_const * tf.to_float(sum(reg_losses))
     print("Regularization Loss: {}".format(sum(reg_losses)))
@@ -189,7 +189,7 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
                     input_image: image,
                     correct_label: label,
                     keep_prob: 0.5,
-                    learning_rate: 0.001
+                    learning_rate: learning_rate
                 }
             )
             print("Loss in Epoch{}: {:.3f}".format((epoch + 1), loss))
@@ -257,7 +257,7 @@ def run():
             input,
             correct_label,
             keep,
-            learning_rate
+            0.001
         )
 
         # TODO: Save inference data using helper.save_inference_samples
