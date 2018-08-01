@@ -67,7 +67,6 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
         vgg_layer7_out,
         num_classes,
         1,
-        strides=(1,1),
         padding = 'same',
         kernel_initializer = tf.random_normal_initializer(stddev = 0.01),
         kernel_regularizer = tf.contrib.layers.l2_regularizer(1e-3)
@@ -75,10 +74,10 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
 
     # Deconvolute E-layer 7
     d_layer_4 = tf.layers.conv2d_transpose(
-        vgg_layer7_out,
+        layer7_1x1,
         num_classes,
         4,
-        2,
+        strides = (2, 2),
         padding = 'same',
         kernel_initializer = tf.random_normal_initializer(stddev = 0.01),
         kernel_regularizer = tf.contrib.layers.l2_regularizer(1e-3)
@@ -89,7 +88,6 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
         pool4_out_scaled,
         num_classes,
         1,
-        strides=(1,1),
         padding = 'same',
         kernel_initializer = tf.random_normal_initializer(stddev = 0.01),
         kernel_regularizer = tf.contrib.layers.l2_regularizer(1e-3)
@@ -102,7 +100,7 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
         layer_4_skip,
         num_classes,
         4,
-        2,
+        strides = (2, 2),
         padding = 'same',
         kernel_initializer = tf.random_normal_initializer(stddev = 0.01),
         kernel_regularizer = tf.contrib.layers.l2_regularizer(1e-3)
