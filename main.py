@@ -1,5 +1,7 @@
 # Akshay Khole
 # References - Lessons, project walkthrough, slack channels, mentor support
+# Referred discussion in
+# https://discussions.udacity.com/t/here-is-some-advice-and-clarifications-about-the-semantic-segmentation-project/403100
 
 #!/usr/bin/env python3
 import os.path
@@ -56,6 +58,10 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     :param num_classes: Number of classes to classify
     :return: The Tensor for the last layer of output
     """
+
+    pool3_out_scaled = tf.multiply(pool3_out, 0.0001, name=‘pool3_out_scaled’)
+    pool4_out_scaled = tf.multiply(vgg_layer4_out, 0.01, name=‘pool4_out_scaled’)
+
     # TODO: Implement function
     layer7_1x1 = tf.layers.conv2d(
         vgg_layer7_out,
@@ -77,9 +83,10 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
         kernel_initializer = tf.random_normal_initializer(stddev = 0.01),
         kernel_regularizer = tf.contrib.layers.l2_regularizer(1e-3)
     )
+
     # 1x1 for E layer 4
     e_layer_4_1x1 = tf.layers.conv2d(
-        vgg_layer4_out,
+        pool4_out_scaled,
         num_classes,
         1,
         strides=(1,1),
@@ -103,7 +110,7 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
 
     # 1x1 for E layer 3
     e_layer_3_1x1 = tf.layers.conv2d(
-        vgg_layer3_out,
+        pool3_out_scaled,
         num_classes,
         1,
         strides=(1,1),
@@ -189,7 +196,7 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
                     input_image: image,
                     correct_label: label,
                     keep_prob: 0.5,
-                    learning_rate: 0.001
+                    learning_rate: 0.0001
                 }
             )
             print("Loss in Epoch{}: {:.3f}".format((epoch + 1), loss))
@@ -203,8 +210,8 @@ def run():
     data_dir = './data'
     runs_dir = './runs'
     tests.test_for_kitti_dataset(data_dir)
-    epochs = 40
-    batch_size = 7
+    epochs = 20
+    batch_size = 5
 
     # Download pretrained vgg model
     helper.maybe_download_pretrained_vgg(data_dir)
