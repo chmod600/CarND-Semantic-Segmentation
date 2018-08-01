@@ -59,8 +59,8 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     :return: The Tensor for the last layer of output
     """
 
-    pool3_out_scaled = tf.multiply(pool3_out, 0.0001, name=‘pool3_out_scaled’)
-    pool4_out_scaled = tf.multiply(vgg_layer4_out, 0.01, name=‘pool4_out_scaled’)
+    pool3_out_scaled = tf.multiply(pool3_out, 0.0001, name='pool3_out_scaled')
+    pool4_out_scaled = tf.multiply(vgg_layer4_out, 0.01, name='pool4_out_scaled')
 
     # TODO: Implement function
     layer7_1x1 = tf.layers.conv2d(
@@ -155,7 +155,7 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
         )
     )
 
-    reg_const = 1e-5
+    reg_const = 1e-2
     reg_losses = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
     loss = cross_entropy_loss + reg_const * tf.to_float(sum(reg_losses))
     print("Regularization Loss: {}".format(sum(reg_losses)))
