@@ -1,5 +1,5 @@
 # Akshay Khole
-# References - Lessons, project walkthrough, slack channels, mentor support
+# References - Lessons, project walkthrough, slack channels, mentor support, Tensorflow samples
 # Referred discussion in
 # https://discussions.udacity.com/t/here-is-some-advice-and-clarifications-about-the-semantic-segmentation-project/403100
 
